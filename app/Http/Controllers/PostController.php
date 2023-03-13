@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
+use App\Notifications\CreatePost;
+// use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
@@ -24,6 +28,7 @@ class PostController extends Controller
      */
     public function create()
     {
+        
         return 'create';
         
     }
@@ -36,7 +41,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        return 'store';
+        $post = Post::create([
+            'title'=>$request->title,
+            'body'=>$request->body ,
+        ]);
+        $users = User::where('id','!=',Auth('api')->user()->id)->get();
+        $user_cteate=Auth('api')->user()->name;
+
+        Notification::send($users,new CreatePost($user_cteate,$post->id));
+        return  $user_cteate;
+        
+    }
+    public function showNotifications(Post $post)
+    
+    {
+        // $notifications = Auth('api')->user()->unreadNotifications;
+        $notifications = Auth('api')->user()->notifications;
+        return $notifications;
         
     }
 

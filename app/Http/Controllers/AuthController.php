@@ -150,6 +150,13 @@ class AuthController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         }
+        //for me
+        $user = User::where(
+           
+            'email' , $request->email,
+             
+        )->first();
+        $token = auth('api')->login($user);
 
         $user = Auth::user();
         return response()->json([

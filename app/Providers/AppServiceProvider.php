@@ -25,16 +25,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        User::created(function ($user) {
-         $newUser =   Notification::create([
-                'user_id' => $user->id,
-                'title' => 'New User',
-                'body'=>'you have new account in our system',
-                'type' => 'success',
-                'url' => 'success',
-            ]);
-            $newUser->save();    
+        // User::created(function ($user) {
+        //  $newUser =   Notification::create([
+        //         'user_id' => $user->id,
+        //         'title' => 'New User',
+        //         'body'=>'you have new account in our system',
+        //         'type' => 'success',
+        //         'url' => 'success',
+        //     ]);
+        //     $newUser->save();    
             
-             });
+        //      });
     }
 }

@@ -2,6 +2,7 @@
  
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,14 @@ use Illuminate\Http\Request;
 
 // });
 Route::apiResource('user',UserController::class);
+Route::controller(PostController::class)->prefix('posts')->group(function (){
+    Route::post('store', 'store');
+    Route::post('create', 'create');
+    Route::post('edit', 'edit');
+    Route::post('destroy', 'destroy');
+    Route::post('showNotifications', 'showNotifications');
+    Route::get('index', 'index');
+});
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('login', 'login');
