@@ -36,7 +36,7 @@ use Illuminate\Http\Request;
 //     Route::post('me', '\App\Http\Controllers\AuthController@me');
 
 // });
-Route::apiResource('user',UserController::class);
+Route::apiResource('users',UserController::class);
 Route::controller(PostController::class)->prefix('posts')->group(function (){
     Route::post('store', 'store');
     Route::post('create', 'create');

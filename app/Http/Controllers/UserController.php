@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ActiveUserJob;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Stmt\Foreach_;
+use stdClass;
 
 class UserController extends Controller
 {
@@ -14,7 +18,15 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return  response()->json(User::getUser()->first());
+        // return  response()->json(User::where('status',1)->count());
+        // $users_handle = User::where('status',0)->get();
+        // // return $users_handle;
+        // foreach ($users_handle as $user){
+        //     $user->update(['status' =>1]);
+        // }
+            ActiveUserJob::dispatch();
+        
+        return 'job successfully';
     }
     /**
      * Show the form for creating a new resource.
@@ -34,7 +46,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         Storage::disk('myPath')->put('riad.txt', 'Hello Riyad');
+        return 'store';
     }
 
     /**
