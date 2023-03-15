@@ -1,6 +1,6 @@
 <?php
- 
 
+use App\Events\NotificationRecieved;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -36,9 +36,14 @@ use Illuminate\Http\Request;
 //     Route::post('me', '\App\Http\Controllers\AuthController@me');
 
 // });
+
+Route::get('noty', function () {
+    return event(new NotificationRecieved('hello notyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'));
+});
 Route::apiResource('users',UserController::class);
 Route::controller(PostController::class)->prefix('posts')->group(function (){
     Route::post('store', 'store');
+    Route::post('storefile', 'storeFile');
     Route::post('create', 'create');
     Route::post('edit', 'edit');
     Route::post('destroy', 'destroy');

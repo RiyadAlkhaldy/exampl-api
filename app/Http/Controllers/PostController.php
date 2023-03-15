@@ -6,11 +6,13 @@ use App\Models\Post;
 use App\Models\User;
 use App\Notifications\CreatePost;
 // use Auth;
+use App\Traits\UploadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
+    use UploadFile;
     /**
      * Display a listing of the resource.
      *
@@ -59,6 +61,12 @@ class PostController extends Controller
         $notifications = Auth('api')->user()->notifications;
         return $notifications;
         
+    }
+    public function storeFile(Request $request)
+    {
+        $path = $this->uploadImage($request,'users');//like user image
+       
+        return $path; 
     }
 
     /**
