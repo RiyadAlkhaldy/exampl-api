@@ -1,6 +1,6 @@
 <?php
- 
 
+use App\Events\NotificationRecieved;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -36,15 +36,6 @@ use Illuminate\Http\Request;
 //     Route::post('me', '\App\Http\Controllers\AuthController@me');
 
 // });
-Route::apiResource('users',UserController::class);
-Route::controller(PostController::class)->prefix('posts')->group(function (){
-    Route::post('store', 'store');
-    Route::post('create', 'create');
-    Route::post('edit', 'edit');
-    Route::post('destroy', 'destroy');
-    Route::post('showNotifications', 'showNotifications');
-    Route::get('index', 'index');
-});
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('login', 'login');
@@ -54,6 +45,24 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::get('me', 'me');
 
 });
+Route::get('/noty', function (Request $request) {
+    
+   return   event(new NotificationRecieved( $request->msg));
+             
+});
+Route::apiResource('users',UserController::class);
+
+Route::controller(PostController::class)->prefix('posts')->group(function (){
+    Route::post('store', 'store');
+    Route::post('storefile', 'storeFile');
+    Route::post('create', 'create');
+    Route::post('edit', 'edit');
+    Route::post('destroy', 'destroy');
+    Route::post('showNotifications', 'showNotifications');
+    Route::get('index', 'index');
+});
+
+
 
 // Route::controller(UserController::class)->prefix('user')->group(function () {
 //     Route::post('', 'index');
