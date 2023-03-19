@@ -62,6 +62,7 @@ class CreatePost extends Notification
         return [
             'user_create' => $this->user_create,
             'post_id' => $this->post_id,
+            
         ];
     }
 }

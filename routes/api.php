@@ -37,10 +37,21 @@ use Illuminate\Http\Request;
 
 // });
 
-Route::get('noty', function () {
-    return event(new NotificationRecieved('hello notyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'));
+Route::controller(AuthController::class)->prefix('auth')->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+    Route::get('me', 'me');
+
+});
+Route::get('/noty', function (Request $request) {
+    
+   return   event(new NotificationRecieved( $request->msg));
+             
 });
 Route::apiResource('users',UserController::class);
+
 Route::controller(PostController::class)->prefix('posts')->group(function (){
     Route::post('store', 'store');
     Route::post('storefile', 'storeFile');
@@ -51,14 +62,7 @@ Route::controller(PostController::class)->prefix('posts')->group(function (){
     Route::get('index', 'index');
 });
 
-Route::controller(AuthController::class)->prefix('auth')->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-    Route::get('me', 'me');
 
-});
 
 // Route::controller(UserController::class)->prefix('user')->group(function () {
 //     Route::post('', 'index');

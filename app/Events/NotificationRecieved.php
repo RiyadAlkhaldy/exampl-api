@@ -20,9 +20,9 @@ class NotificationRecieved implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($notigication)
     {
-        //
+        $this->notigication = $notigication;
     }
 
     /**
@@ -32,6 +32,15 @@ class NotificationRecieved implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new  Channel('Notification');
+        
+    }
+    public function broadcastAs()
+{
+    return 'Notification';
+}
+    public function broadcastWith()
+    {
+        return ["msg"=> $this->notigication];
     }
 }
