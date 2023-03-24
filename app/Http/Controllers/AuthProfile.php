@@ -2,28 +2,24 @@
 
 namespace App\Http\Controllers;
 
-
-
-use App\Traits\AuthVerify;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-
-class AuthController extends Controller
+class AuthProfile extends Controller
 {
-use AuthVerify;
     public function __construct()
     {
-        // $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:profile-api', ['except' => ['login','register']]);
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        // $request->validate([
+        //     'email' => 'required|string|email',
+        //     'password' => 'required|string',
+        // ]);
         $credentials = $request->only('email', 'password');
 
         $token = Auth::attempt($credentials);
@@ -54,48 +50,37 @@ use AuthVerify;
     }
 
     public function register(Request $request){
-        
         // $request->validate([
-        //     'name' => 'required|string|max:255',
+        //     'user_name' => 'required|string|max:255',
         //     'email' => 'required|string|email|max:255|unique:users',
         //     'password' => 'required|string|min:6',
         // ]);
- $verifiedUser = $this->registerVerify($request);
- if(isset($verifiedUser))
-       {
+     $profile =   Profile::create([
+        'first_name'=>$request->first_name,
+        'last_name'=>$request->last_name,
+
+     ]);
+     $profile->save();
 
         $user = User::create([
-            'name' => $verifiedUser->name,
+            'user_name' => $request->user_name,
             'email' => $request->email,
-            'section' => $verifiedUser->section,
-            'id_number' => $verifiedUser->id_number ,
-            'password' => Hash::make($verifiedUser->id_number),
+            'password' => Hash::make($request->password),
+            'user_profile'=>$profile->id,
         ]);
+        $user->save();
         // $token = Auth::attempt($credentials);
 
         $token = auth('api')->login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
-            'user' => $user,
+            'user' => auth('api')->user(),
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
             ]
         ]);
-       }
-       else {
-        return 
-        response()->json([
-            'status' => 'faild',
-            'message' => 'User not created  ',
-            'user' => null,
-            'authorisation' => [
-                'token' => null,
-                'type' => 'bearer',
-            ]
-        ]);
-       }
     }
 
     public function logout()
@@ -126,18 +111,14 @@ use AuthVerify;
             ]
         ]);
     }
-    public function eexel()
+    
+    public function showprofiles()
     {
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-$reader->setReadDataOnly(true);
-
-        $spreadsheet = $reader->load(public_path()."\app\public\student.xlsx" );
-    $spreadsheet->getActiveSheet();
-    //    $spreadsheet->getRibbonXMLData ();
-        return  $spreadsheet->getRibbonXMLData ('A');
-        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-// $reader->setReadDataOnly(true);
-// $spreadsheet = $reader->load("05featuredemo.xlsx");
+        $profiles = Profile::all();
+        
+        return response()->json([
+            'status' => 'success',
+            'user' => $profiles
+        ]);
     }
-
 }

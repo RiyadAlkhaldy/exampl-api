@@ -6,6 +6,8 @@ use App\Jobs\ActiveUserJob;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx as ReaderXlsx;
 use PhpParser\Node\Stmt\Foreach_;
 use stdClass;
 
@@ -35,7 +37,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -48,6 +50,7 @@ class UserController extends Controller
     {
          Storage::disk('myPath')->put('riad.txt', 'Hello Riyad');
         return 'store';
+        
     }
 
     /**
@@ -58,7 +61,11 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        // $file = public_path('student.xlsx');
+        // $reader = new ReaderXlsx();
+        // $spreadsheet = $reader->load($file);
+        // $sheet = $spreadsheet->getActiveSheet();
+
     }
 
     /**

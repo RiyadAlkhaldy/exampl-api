@@ -12,6 +12,7 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "phpoffice/phpspreadsheet": "^1.25",
         "pusher/pusher-php-server": "~4.0",
         "tymon/jwt-auth": "^1.0"
     },
