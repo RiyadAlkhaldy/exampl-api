@@ -61,13 +61,26 @@ use AuthVerify;
         //     'password' => 'required|string|min:6',
         // ]);
  $verifiedUser = $this->registerVerify($request);
+//  return $verifiedUser;
  if(isset($verifiedUser))
        {
+         $colloge = $this->getColloge($verifiedUser);
+         $section = $this->getSection($verifiedUser);
+         if(!isset($colloge)){
+            $this->setColloge($verifiedUser);
+            $colloge = $this->getColloge($verifiedUser);
+         }
+         if(!isset($section)){
+            $this->setSection($verifiedUser,$colloge->id);
+            $section = $this->getSection($verifiedUser);
+         }
 
         $user = User::create([
             'name' => $verifiedUser->name,
             'email' => $request->email,
-            'section' => $verifiedUser->section,
+            'colloge_id' => $colloge->id,
+            'section_id' => $section->id,
+
             'id_number' => $verifiedUser->id_number ,
             'password' => Hash::make($verifiedUser->id_number),
         ]);

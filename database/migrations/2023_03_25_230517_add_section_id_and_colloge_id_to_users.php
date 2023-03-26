@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePostsTable extends Migration
+class AddSectionIdAndCollogeIdToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,11 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('body');
-            $table->smallInteger('type');
-            $table->string('url')->nullable();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('section_id')->nullable();
             $table->foreign('section_id')->references('id')->on('sections');
             $table->unsignedBigInteger('colloge_id')->nullable();
             $table->foreign('colloge_id')->references('id')->on('colloges');
-            $table->timestamps();
         });
     }
 
@@ -36,6 +28,8 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['section_id',  'colloge_id']);
+        });
     }
 }

@@ -16,8 +16,10 @@ class CreateSectionsTable extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('colloge_id')->nullable();
+            $table->foreign('colloge_id')->references('id')->on('colloges');
  
             $table->timestamps();
         });

@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->integer('university_id')->nullable();
             $table->integer('id_number')->nullable();
             $table->string('description')->nullable();
+            
+           
             $table->rememberToken();
             $table->timestamps();
         });

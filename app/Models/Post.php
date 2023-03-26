@@ -15,6 +15,8 @@ class Post extends Model
         'type',
         'url',
         'user_id',
+        'section_id',
+        'colloge_id',
         'created_at',
         'updated_at',
         
