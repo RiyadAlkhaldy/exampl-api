@@ -20,7 +20,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return 'index';
+        $post = Post::all();
+        return $post;
     }
 
     /**
@@ -44,16 +45,35 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $post = Post::create([
-            'title'=>$request->title,
-            'body'=>$request->body ,
+            'content'=>$request->content,
+            'type'=>$request->type,
+            'url'=> $request->url ,
+            'user_id'=>  $request->user_id,
+            'section_id'=>  $request->section_id,
+            'colloge_id'=>  $request->colloge_id,
+            
         ]);
-        $users = User::where('id','!=',Auth('api')->user()->id)->get();
+        // $users = User::where('id','!=',Auth('api')->user()->id)->get();
+        $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
         $user_cteate=Auth('api')->user()->name;
 
         Notification::send($users,new CreatePost($user_cteate,$post->id));
         return  $user_cteate;
         
     }
+    // public function store(Request $request)
+    // {
+    //     $post = Post::create([
+    //         'title'=>$request->title,
+    //         'body'=>$request->body ,
+    //     ]);
+    //     $users = User::where('id','!=',Auth('api')->user()->id)->get();
+    //     $user_cteate=Auth('api')->user()->name;
+
+    //     Notification::send($users,new CreatePost($user_cteate,$post->id));
+    //     return  $user_cteate;
+        
+    // }
     public function showNotifications(Post $post)
     
     {

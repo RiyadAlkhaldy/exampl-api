@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\NotificationRecieved;
+use App\Http\Controllers\Api\v1\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -47,6 +48,14 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::get('me', 'me');
 
 });
+// Route::post('/v1/file_upload', 'App\Http\Controllers\Api\v1\ApiController@file_upload');
+
+Route::controller(ApiController::class)->prefix('v1')->group(function (){
+    
+    Route::post( 'file_upload',  'file_upload');
+    
+});
+
 Route::get('/noty', function (Request $request) {
     
    return   event(new NotificationRecieved( $request->msg));
@@ -54,7 +63,7 @@ Route::get('/noty', function (Request $request) {
 });
 Route::apiResource('users',UserController::class);
 
-Route::controller(PostController::class)->prefix('posts')->group(function (){
+Route::controller(PostController::class)->prefix('posts')->middleware('auth:api')->group(function (){
     Route::post('store', 'store');
     Route::post('storefile', 'storeFile');
     Route::post('create', 'create');

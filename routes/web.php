@@ -2,6 +2,7 @@
 
 use App\Events\NotificationRecieved;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+Route::get('/file', function () {
+    Storage::disk('public')->put('text.txt',"file text contianted");
+    return  "ok";
 });
 Route::get('noty', function () {
     return event(new NotificationRecieved('hello noty'));

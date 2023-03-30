@@ -15,15 +15,15 @@ class AuthController extends Controller
 use AuthVerify;
     public function __construct()
     {
-        // $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register']]);
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+        // $request->validate([
+        //     'email' => 'required|string|email',
+        //     'password' => 'required|string',
+        // ]);
         $credentials = $request->only('email', 'password');
 
         $token = Auth::attempt($credentials);
@@ -37,12 +37,12 @@ use AuthVerify;
         $user = User::where(
            
             'email' , $request->email,
-             
+            
         )->first();
         $token = auth('api')->login($user);
 
         $user = Auth::user();
-        return response()->json([
+        return response()->json([ 
                 'status' => 'success',
                 'user' => $user,
                 'authorisation' => [
@@ -61,6 +61,7 @@ use AuthVerify;
         //     'password' => 'required|string|min:6',
         // ]);
  $verifiedUser = $this->registerVerify($request);
+//  return $verifiedUser->age === null?"null":"empty";
 //  return $verifiedUser;
  if(isset($verifiedUser))
        {
@@ -80,6 +81,7 @@ use AuthVerify;
             'email' => $request->email,
             'colloge_id' => $colloge->id,
             'section_id' => $section->id,
+            'university_id' => $verifiedUser->university_id,
 
             'id_number' => $verifiedUser->id_number ,
             'password' => Hash::make($verifiedUser->id_number),
