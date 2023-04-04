@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
  
 // ------------
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use Illuminate\Http\Request;
 // ------
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
@@ -31,6 +32,8 @@ class ApiController extends Controller
         // if ($validator->fails()) {
         //     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         // }
+        // return $request['id'];
+        
   
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
         if ($receiver->isUploaded() === false) {
@@ -43,9 +46,21 @@ class ApiController extends Controller
             File::deleteDirectory(storage_path('app/chunks/'));
   
             //your data insert code
+            // $link = str_split()
+            $post = Post::create([
+                'content'=>$request->content,
+                'type'=>$request->type,
+                'url'=> url($response['link']) ,
+                'user_id'=>  $request->user_id,
+                'section_id'=>  $request->section_id,
+                'colloge_id'=>  $request->colloge_id,
+                
+            ]);
+
+            // Post::create([]);
   
             return response()->json([
-                'status' => true,
+                'status' => 'success',
                 'link' => url($response['link']),
                 'mime_type' => url($response['mime_type']),
                 'extension' => url($response['extension']),

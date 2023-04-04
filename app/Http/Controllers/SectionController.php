@@ -12,9 +12,12 @@ class SectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getSectionPosts(){
+        return 'hi';
+    }
     public function index()
     {
-        //
+        return Section::find(1)->colloge->all();
     }
 
     /**
