@@ -12,13 +12,13 @@ class CollogeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllPosts(){
+    public function getCollogePosts(Request $request){
         // $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
         //                ->join('posts','posts.section_id','=','sections.id')->get(['colloges.name as colloge_name','sections.name as section_name','posts.*']);
         // return $data;
         $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
                        ->join('users','users.section_id','=','sections.id')
-                        ->join('posts','posts.section_id','=','sections.id')
+                        ->join('posts','posts.section_id','=','sections.id')->where('colloges.id',$request->colloge_id)->limit(4)
                        ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
         return response()->json(['posts'=>$data]);
     }

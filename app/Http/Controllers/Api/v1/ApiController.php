@@ -12,7 +12,7 @@ use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use Illuminate\Http\UploadedFile;
-use File;
+use Illuminate\Support\Facades\File;
 
 class ApiController extends Controller
 {
@@ -70,13 +70,13 @@ class ApiController extends Controller
         $handler = $save->handler();
     }
 
- /**
- * Saves the file
- *
- * @param UploadedFile $file
- *
- * @return \Illuminate\Http\JsonResponse
- */
+//  /**
+//  * Saves the file
+//  *
+//  * @param UploadedFile $file
+//  *
+//  * @return \Illuminate\Http\JsonResponse
+//  */
 protected function saveFile(UploadedFile $file)
 {   $extension = $file->getClientOriginalExtension();
     $fileName = $this->createFilename($file);
@@ -91,11 +91,11 @@ protected function saveFile(UploadedFile $file)
         'extension' => $extension,
     ];
 }
-/**
- * Create unique filename for uploaded file
- * @param UploadedFile $file
- * @return string
- */
+// /**
+//  * Create unique filename for uploaded file
+//  * @param UploadedFile $file
+//  * @return string
+//  */
 protected function createFilename(UploadedFile $file)
 {
     $extension = $file->getClientOriginalExtension();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Colloge;
 use App\Models\Section;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,12 @@ class SectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getSectionPosts(){
-        return 'hi';
+    public function getSectionPosts(Request $request){
+        $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
+        ->join('users','users.section_id','=','sections.id')
+         ->join('posts','posts.section_id','=','sections.id')->where('sections.id',$request->section_id)->limit(8)
+        ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
+return response()->json(['posts'=>$data]);
     }
     public function index()
     {

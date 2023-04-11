@@ -26,9 +26,13 @@ class PostController extends Controller
         // return $data;
         $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
                        ->join('users','users.section_id','=','sections.id')
-                        ->join('posts','posts.section_id','=','sections.id')
+                         ->join('posts','posts.section_id','=','sections.id')->limit(8)
+                         ->orderBy('created_at', 'desc')
                        ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
-        return response()->json(['posts'=>$data]);
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$data,]);
     }
 
    
@@ -126,28 +130,27 @@ class PostController extends Controller
         return 'edit';
         
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function update(Request $request, Post $post)
     {
         return 'update';
         
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Post $post)
+    
+    public function destroy(Request $request)
     {
-        return 'delete';
+        // Post::
+        return response()->json(['status'=>'delete']);
+    }
+    public function delete(Request $request)
+    {
+        $post = Post::where('id',$request->id)->delete();
+
+        // Post::
+        if(isset($post)){
+            return response()->json(['status'=>'delete']);
+
+        }
     }
 }

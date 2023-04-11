@@ -18,6 +18,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getAllUsers(){
+        return User::all();
+    }
     public function index(Request $request)
     {
         // return  response()->json(User::where('status',1)->count());
