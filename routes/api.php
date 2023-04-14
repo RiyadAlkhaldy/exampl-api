@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\v1\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CollogeController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
@@ -56,11 +57,20 @@ Route::controller(PostController::class)->prefix('posts') ->group(function (){
     Route::post('delete', 'delete');
     Route::post('showNotifications', 'showNotifications');
     Route::post('get-all-posts', 'getAllPosts');
+    Route::post('get-number-comments-likes', 'getNumberCommentsLikes');
 });
 Route::controller(CommentController::class)->prefix('comment')->group(function () {
     Route::post('get-all-comments', 'getAllComments');
-    Route::post('add-comments', 'addComment');
+    Route::post('add-comment', 'addComment');
+    Route::post('get-number-comments', 'getNumberComments');
+    
+
+});
+Route::controller(LikeController::class)->prefix('like')->group(function () {
+    Route::post('add-like', 'addLike');
+//
     Route::post('get-all-comments', 'getAllComments');
+    Route::post('get-number-comments', 'getNumberComments');
     
 
 });
