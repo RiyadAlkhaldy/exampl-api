@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Colloge;
+use App\Models\Post;
 use App\Models\Section;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,35 @@ class SectionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getSectionPosts(Request $request){
-        $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-        ->join('users','users.section_id','=','sections.id')
-         ->join('posts','posts.section_id','=','sections.id')->where('sections.id',$request->section_id)->limit(8)
-        ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
-return response()->json(['posts'=>$data]);
+        $data = Colloge::
+        join('sections','sections.colloge_id','=','colloges.id')
+       -> join('posts','posts.section_id','=','sections.id')
+         ->join('users','users.id','=','posts.id')
+         ->where('posts.section_id',$request->section_id)
+                    
+                    ->select(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ])
+
+                        
+                                ->latest()->take(10)
+                                ->get();
+                    //    ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
+                       $posts=[];
+     foreach ($data as   $post) {
+        # code...
+       $numberComments = Post::find($post->id)->comments->count();
+       $numberLikes = Post::find($post->id)->likes->count();
+       $amILike = Post::find( 38)->likes->count();
+       $post->numberComments=$numberComments;
+       $post->numberLikes=$numberLikes;
+       $post->amILike=$amILike;
+      array_push($posts,  $post );
+     }
+       
+ 
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$posts,]);
     }
     public function index()
     {

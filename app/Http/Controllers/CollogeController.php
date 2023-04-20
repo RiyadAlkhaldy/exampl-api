@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Colloge;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CollogeController extends Controller
@@ -13,19 +14,45 @@ class CollogeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getCollogePosts(Request $request){
-        // $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-        //                ->join('posts','posts.section_id','=','sections.id')->get(['colloges.name as colloge_name','sections.name as section_name','posts.*']);
-        // return $data;
-        $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-                       ->join('users','users.section_id','=','sections.id')
-                        ->join('posts','posts.section_id','=','sections.id')->where('colloges.id',$request->colloge_id)->limit(4)
-                       ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
-        return response()->json(['posts'=>$data]);
+        $data = Colloge::
+        join('sections','sections.colloge_id','=','colloges.id')
+       -> join('posts','posts.section_id','=','sections.id')
+         ->join('users','users.id','=','posts.id')
+         ->where('posts.colloge_id',$request->colloge_id)
+                    
+                    ->select(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ])
+
+                        
+                                // ->latest()->take(10)
+                                ->get();
+                    //    ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
+                       $posts=[];
+     foreach ($data as   $post) {
+        # code...
+       $numberComments = Post::find($post->id)->comments->count();
+       $numberLikes = Post::find($post->id)->likes->count();
+       $amILike = Post::find( 38)->likes->count();
+       $post->numberComments=$numberComments;
+       $post->numberLikes=$numberLikes;
+       $post->amILike=$amILike;
+      array_push($posts,  $post );
+     }
+       
+ 
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$posts,]);
     }
     public function index(Request $request)
     {
        $sections = Colloge::find(2);
        return $sections->sections;
+    }
+    public function getAllCollge()
+    {
+       $colloge = Colloge::all();
+       return $colloge;
     }
 
     /**

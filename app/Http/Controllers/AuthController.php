@@ -44,6 +44,7 @@ use AuthVerify;
         $user = Auth::user();
         return response()->json([ 
                 'status' => 'success',
+                'message' => 'User login successfully',
                 'user' => $user,
                 'authorisation' => [
                     'token' => $token,
@@ -85,6 +86,7 @@ use AuthVerify;
 
             'id_number' => $verifiedUser->id_number ,
             'password' => Hash::make($verifiedUser->id_number),
+            'type'=>$request->type,
         ]);
         // $token = Auth::attempt($credentials);
 
@@ -92,7 +94,7 @@ use AuthVerify;
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
-            'user' => $user,
+            'user' => $user->find($user->id),
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',

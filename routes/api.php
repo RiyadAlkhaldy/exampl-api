@@ -34,6 +34,7 @@ Route::controller(UserController::class)->prefix('user')->group(function (){
 Route::controller(CollogeController::class)->prefix('colloge')->group(function () {
     Route::get('index', 'index');
     Route::post('get-colloge-posts', 'getCollogePosts');
+    Route::post('get-all-collge', 'getAllCollge');
 
     
 

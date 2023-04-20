@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\v1;
 // ------------
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\User;
+use App\Notifications\CreatePost;
 use Illuminate\Http\Request;
 // ------
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
@@ -13,6 +15,7 @@ use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 
 class ApiController extends Controller
 {
@@ -58,6 +61,15 @@ class ApiController extends Controller
             ]);
 
             // Post::create([]);
+
+// $users = User::where('id','!=',Auth('api')->user()->id)->get();
+$users = User::get();
+// $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
+$user_cteate=Auth('api')->user()->name;
+
+Notification::send($users,new CreatePost($user_cteate,$post->id));
+
+            //
   
             return response()->json([
                 'status' => 'success',

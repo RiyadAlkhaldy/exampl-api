@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Colloge;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use App\Notifications\CreatePost;
@@ -21,26 +22,42 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getAllPosts(){
-        $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-                       ->join('posts','posts.section_id','=','sections.id')
-                         ->join('users','users.section_id','=','sections.id')
-                         ->limit(9)
-                         ->orderBy('created_at', 'desc')
-                       ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
-        // $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-        //                ->join('posts','posts.section_id','=','sections.id')->get(['colloges.name as colloge_name','sections.name as section_name','posts.*']);
-        // return $data;
+        $data = Colloge::
+        join('sections','sections.colloge_id','=','colloges.id')
+       -> join('posts','posts.section_id','=','sections.id')
+         ->join('users','users.id','=','posts.id')
+                    //   ->
+                        
+                    // join('sections','sections.colloge_id','=','colloges.id')
+                    //   ->join('posts','posts.section_id','=','sections.id')
+                    //      ->join('users','users.section_id','=','sections.id')
+                         
+                    //    ->where( 'posts.user_id','=','users.id')
+                    ->select(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ])
 
-        // $data = Colloge::join('sections','sections.colloge_id','=','colloges.id')
-        //                ->join('users','users.section_id','=','sections.id')
-        //                  ->join('posts','posts.section_id','=','sections.id')
-        //                  ->limit(9)
-        //                  ->orderBy('created_at', 'desc')
-        //                ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
+                        //  ->limit(9)     
+                                // ->orderBy('posts.created_at', 'DESC')->take(10)
+                                // ->latest()->take(10)
+                                ->latest()->take(10)
+                                ->get();
+                    //    ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
+                       $posts=[];
+     foreach ($data as   $post) {
+        # code...
+       $numberComments = Post::find($post->id)->comments->count();
+       $numberLikes = Post::find($post->id)->likes->count();
+       $amILike = Post::find( 38)->likes->count();
+       $post->numberComments=$numberComments;
+       $post->numberLikes=$numberLikes;
+       $post->amILike=$amILike;
+      array_push($posts,  $post );
+     }
+       
+ 
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
-            'posts'=>$data,]);
+            'posts'=>$posts,]);
     }
 
     public function getNumberCommentsLikes(Request $request){
@@ -89,7 +106,8 @@ class PostController extends Controller
             
         ]);
         // $users = User::where('id','!=',Auth('api')->user()->id)->get();
-        $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
+        $users = User::get();
+        // $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
         $user_cteate=Auth('api')->user()->name;
 
         Notification::send($users,new CreatePost($user_cteate,$post->id));
