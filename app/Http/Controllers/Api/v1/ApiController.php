@@ -55,7 +55,7 @@ class ApiController extends Controller
                 'type'=>$request->type,
                 'url'=> url($response['link']) ,
                 'user_id'=>  $request->user_id,
-                'section_id'=>  $request->section_id,
+                'section_id'=> isset($request->section_id )||$request->section_id ==0 ?$request->section_id:null,
                 'colloge_id'=>  $request->colloge_id,
                 
             ]);

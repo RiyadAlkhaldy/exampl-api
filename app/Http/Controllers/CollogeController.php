@@ -49,10 +49,21 @@ class CollogeController extends Controller
        $sections = Colloge::find(2);
        return $sections->sections;
     }
+
+
+    /*
+    function getAllCollge
+    */
     public function getAllCollge()
     {
-       $colloge = Colloge::all();
-       return $colloge;
+        
+       $colloge = Colloge::get();
+       return response()->json([
+        'status'=>'success',
+            'message' => 'The posts',
+             'colloge' => $colloge]);
+    //    $colloge = Colloge::with('sections')->get();
+    //    return response()->json( $colloge);
     }
 
     /**

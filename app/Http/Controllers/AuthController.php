@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 
+use App\Models\TeacherTemp;
 use App\Traits\AuthVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class AuthController extends Controller
 use AuthVerify;
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register','registerTecherOrAdmin','createTeacherTemp']]);
     }
 
     public function login(Request $request)
@@ -54,16 +55,13 @@ use AuthVerify;
 
     }
 
-    public function register(Request $request){
-        
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|string|email|max:255|unique:users',
-        //     'password' => 'required|string|min:6',
-        // ]);
+public function register(Request $request){
+   $checkRegister = $this->checkIfUserRegsterBefore (  $request);
+    if(isset($checkRegister))
+    return $checkRegister;
+     
  $verifiedUser = $this->registerVerify($request);
-//  return $verifiedUser->age === null?"null":"empty";
-//  return $verifiedUser;
+
  if(isset($verifiedUser))
        {
          $colloge = $this->getColloge($verifiedUser);
@@ -104,17 +102,65 @@ use AuthVerify;
        else {
         return 
         response()->json([
-            'status' => 'faild',
+            'status' => 'error',
             'message' => 'User not created  ',
             'user' => null,
             'authorisation' => [
                 'token' => null,
                 'type' => 'bearer',
-            ]
+            ],200
         ]);
        }
     }
+    
+    public function registerTecherOrAdmin(Request $request){
+        $checkRegister = $this->checkIfAdminOrTecherRegsterBefore ($request);
+        if(isset($checkRegister))
+        return $checkRegister;
 
+               $user = User::create([
+                   'name' => $request->name,
+                   'email' => $request->email,
+                   'colloge_id' => $request->colloge_id,
+                   'id_number' => $request->id_number ,
+                   'password' => Hash::make($request->password),
+                   'type'=>$request->type,
+               ]);
+       
+               $token = auth('api')->login($user);
+               return  response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                'user' => $user->find($user->id),
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ]);
+
+            //    return  response()->json([
+            //        'status' => 'faild',
+            //        'message' => 'User not created  ',
+            //        'user' => null,
+            //        'authorisation' => [
+            //            'token' => null,
+            //            'type' => 'bearer',
+            //        ]
+            //    ]);
+              }
+    public function createTeacherTemp(Request $request){
+       $teacher = TeacherTemp::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'colloge_id' => $request->colloge_id,
+            'id_number' => $request->id_number ,
+            'password' => Hash::make($request->password),
+            'type'=>$request->type,
+        ]);
+        return response()->json(['techer'=> $teacher]);
+
+    }
+       
     public function logout()
     {
         Auth::logout();

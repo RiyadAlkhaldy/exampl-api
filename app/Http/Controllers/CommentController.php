@@ -8,7 +8,11 @@ use Illuminate\Http\Request;
 
 
 class CommentController extends Controller
+
 {
+    public function __construct(){
+        $this->middleware('auth:api');
+    }
     public function getAllComments(Request $request){
     $data = Post::join('comments','comments.post_id','=','posts.id')
                 ->join('users','users.id','=','comments.user_id')
@@ -42,4 +46,11 @@ class CommentController extends Controller
             'comment'=>  $data,
             ]);
         }
+
+        /*
+        create Comment 
+        */
+       public function create(Request $request){
+
+       }
 }

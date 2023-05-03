@@ -14,6 +14,9 @@ class Colloge extends Model
     {
         return $this->hasMany(Section::class);
     }
-    
+    public function post(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
 
 }

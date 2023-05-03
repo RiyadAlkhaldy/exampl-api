@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RealtimePosts;
 use App\Models\Colloge;
 use App\Models\Comment;
 use App\Models\Post;
@@ -11,11 +12,16 @@ use App\Notifications\CreatePost;
 use App\Traits\UploadFile;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
     use UploadFile;
+
+    public function __construct(){
+        // $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -44,20 +50,49 @@ class PostController extends Controller
                        $posts=[];
      foreach ($data as   $post) {
         # code...
-       $numberComments = Post::find($post->id)->comments->count();
-       $numberLikes = Post::find($post->id)->likes->count();
-       $amILike = Post::find( 38)->likes->count();
+       $numberComments = Post::find($post->id)->comment->count();
+       $numberLikes = Post::find($post->id)->like->count();
+       $amILike = Post::find($post->id)->like->count();
        $post->numberComments=$numberComments;
        $post->numberLikes=$numberLikes;
        $post->amILike=$amILike;
+       if(isset($post->url)){
+        str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+        }
       array_push($posts,  $post );
      }
-       
+    //  https://4f81-178-130-104-122.ngrok-free.app -> http://127.0.0.1:8000
+    //  https://9b63-175-110-9-28.ngrok-free.app
  
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
             'posts'=>$posts,]);
+    }
+
+    public function getAllPosts2(){
+        $data = post::
+    //    join('colloges','colloges.id','=','posts.colloge_id')
+    //    ->
+       with('colloge')
+       ->withCount('comment')
+       ->withCount('like')
+    //    ->latest()
+   
+                                ->get();
+                       $posts=[];
+     foreach ($data as   $post) {
+        # code...
+       
+       if(isset($post->url)){
+        str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+        }
+      array_push($posts,  $post );
+     }
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$data,]);
     }
 
     public function getNumberCommentsLikes(Request $request){
@@ -99,24 +134,35 @@ class PostController extends Controller
         $post = Post::create([
             'content'=>$request->content,
             'type'=>$request->type,
-            'url'=> $request->url ,
-            'user_id'=>  $request->user_id,
-            'section_id'=>  $request->section_id,
+            'user_id'=>  Auth('api')->user()->id,
+            'section_id'=>  isset($request->section_id )||$request->section_id ==0 ?$request->section_id:null,
             'colloge_id'=>  $request->colloge_id,
             
         ]);
         // $users = User::where('id','!=',Auth('api')->user()->id)->get();
         $users = User::get();
         // $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
-        $user_cteate=Auth('api')->user()->name;
+        $user=Auth('api')->user();
+    
+        
+        // $this->sendNotificationsToOthers(  $post,$user);
 
-        Notification::send($users,new CreatePost($user_cteate,$post->id));
+
+        // Notification::send($users,new CreatePost($user_create,$post->id));
+        // event(new RealtimePosts(['user_create'=>$user_create,'post_id'=> 'riad' ])) ;
+        // broadcast(new RealtimePosts(['user_create'=>$user_create,'post_id'=>$post->id]))->toOthers();
         return   response()->json([
             'status' => 'success',
             'message' => 'Post  created and stored successfully',
             
         ]);
         
+    }
+    private function sendNotificationsToOthers(Post $post,$user){
+        // broadcast(new RealtimePosts( $post, $user))->toOthers();
+        broadcast(new RealtimePosts( $post, $user));
+        // event(new RealtimePosts( $post, $user));
+
     }
     // public function store(Request $request)
     // {
@@ -154,7 +200,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return 'show';
+        return  phpinfo();
         
     }
 

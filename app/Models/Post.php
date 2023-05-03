@@ -23,17 +23,29 @@ class Post extends Model
         
 
     ];
-    public function comments(): HasMany
+    public function comment(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
-    public function likes(): HasMany
+    // public function scopeNumberComments($query) 
+    // {
+    //     return $query->  count($this->comment()->id);
+    // }
+    public function like(): HasMany
     {
         return $this->hasMany(Like::class);
     }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function colloge(): BelongsTo
+    {
+        return $this->belongsTo(Colloge::class);
+    }
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(Section::class);
     }
     
 
