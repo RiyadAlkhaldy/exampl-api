@@ -10,7 +10,7 @@ class Colloge extends Model
 {
     use HasFactory;
     protected $fillable = ['id','name','user_id'  ];
-    public function sections(): HasMany
+    public function section(): HasMany
     {
         return $this->hasMany(Section::class);
     }

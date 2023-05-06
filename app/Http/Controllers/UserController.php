@@ -55,12 +55,18 @@ class UserController extends Controller
         // $userPosts = Colloge::where('id',Auth('api')->user()->colloge_id)
        $userId= Auth('api')->user()->id;
         $userPosts = Post::where('user_id', $userId)
-        ->withCount( 'comment')
-        ->withCount('like')
-        // ->with(['like'=>function ($like){
-        //     $like->where('user_id', Auth('api')->user()->id);
-        // }])
-        ->latest()->take(20)
+        ->with(['colloge'=> function ($colloge){
+            $colloge->select('id','name');
+           }])
+           ->with(['section'=> function ($section){
+            $section->select('id','name');
+           }])
+           ->with(['user'=> function ($user){
+            $user->select('id','name','img');
+           }])
+           ->withCount('comment')
+           ->withCount('like')
+           ->latest()->take(50)
         ->get();
         $posts=[];
         foreach ($userPosts as   $post) {
@@ -80,9 +86,9 @@ class UserController extends Controller
           }
          
 
-          if(isset($post->url)){
-           str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
-           }
+        //   if(isset($post->url)){
+        //    str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+        //    }
          array_push($posts,  $post );
         }
        return response()->json([
@@ -161,7 +167,7 @@ class UserController extends Controller
             //your data insert code
             // $link = str_split()
            User::where('id',$request->user_id)->update([
-                'url'=> url($response['link']) ,
+                'img'=> url($response['link']) ,
                 
             ]);
 

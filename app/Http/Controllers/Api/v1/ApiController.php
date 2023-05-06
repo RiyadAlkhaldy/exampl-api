@@ -48,29 +48,15 @@ class ApiController extends Controller
   
             File::deleteDirectory(storage_path('app/chunks/'));
   
-            //your data insert code
-            // $link = str_split()
-            $post = Post::create([
-                'content'=>$request->content,
-                'type'=>$request->type,
-                'url'=> url($response['link']) ,
-                'user_id'=>  $request->user_id,
-                'section_id'=> isset($request->section_id )||$request->section_id ==0 ?$request->section_id:null,
-                'colloge_id'=>  $request->colloge_id,
-                
-            ]);
-
+    $post = $this->createPost($request,$response);
             // Post::create([]);
 
 // $users = User::where('id','!=',Auth('api')->user()->id)->get();
 $users = User::get();
 // $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
 $user_cteate=Auth('api')->user()->name;
-
 Notification::send($users,new CreatePost($user_cteate,$post->id));
-
             //
-  
             return response()->json([
                 'status' => 'success',
                 'link' => url($response['link']),
@@ -81,7 +67,31 @@ Notification::send($users,new CreatePost($user_cteate,$post->id));
         }
         $handler = $save->handler();
     }
+    private function createPost(Request $request,$response){
+        if(isset($request->section_id)){
+             return Post::create([
+           'content'=>$request->content,
+           'type'=>$request->type,
+           'url'=> url($response['link']) ,
+           'user_id'=>  $request->user_id,
+           'section_id'=> $request->section_id,
+           'colloge_id'=>  $request->colloge_id,
+           
+       ]);
+       }
+       else{
+           return Post::create([
+               'content'=>$request->content,
+               'type'=>$request->type,
+               'url'=> url($response['link']) ,
+               'user_id'=>  $request->user_id,
+               'colloge_id'=>  $request->colloge_id,
+               
+           ]); 
+       }
+    }
 
+    
 //  /**
 //  * Saves the file
 //  *

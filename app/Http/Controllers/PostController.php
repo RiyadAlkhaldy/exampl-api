@@ -74,21 +74,42 @@ class PostController extends Controller
         $data = post::
     //    join('colloges','colloges.id','=','posts.colloge_id')
     //    ->
-       with('colloge')
+       with(['colloge'=> function ($colloge){
+        $colloge->select('id','name');
+       }])
+       ->with(['section'=> function ($section){
+        $section->select('id','name');
+       }])
+       ->with(['user'=> function ($user){
+        $user->select('id','name','img');
+       }])
        ->withCount('comment')
        ->withCount('like')
-    //    ->latest()
-   
-                                ->get();
-                       $posts=[];
-     foreach ($data as   $post) {
-        # code...
-       
-       if(isset($post->url)){
-        str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+       ->latest()->take(50)
+    ->get();
+
+    // ->simplePaginate(20);
+    $posts=[];
+        foreach ($data as   $post) {
+           # code...
+          $amILike = Post::where('id',$post->id)
+          ->with(['like'=>function ($like){
+            $like->where('user_id', Auth('api')->user()->id);
+          }])
+          ->first();
+        //   $post->numberComments=$numberComments;
+        //   $post->numberLikes=$amILike;
+          if((int)$amILike[0]>0){
+            $post->amILike= 1;
+          }
+          else{
+             $post->amILike= 0;
+          }
+         array_push($posts,  $post );
+    //    if(isset($post->url)){
+    //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
         }
-      array_push($posts,  $post );
-     }
+    
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
@@ -116,12 +137,7 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function create()
-    {
-        
-        return 'create';
-        
-    }
+   
 
     /**
      * Store a newly created resource in storage.
@@ -129,20 +145,13 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        $post = Post::create([
-            'content'=>$request->content,
-            'type'=>$request->type,
-            'user_id'=>  Auth('api')->user()->id,
-            'section_id'=>  isset($request->section_id )||$request->section_id ==0 ?$request->section_id:null,
-            'colloge_id'=>  $request->colloge_id,
-            
-        ]);
+        $post = $this->createPost($request);
         // $users = User::where('id','!=',Auth('api')->user()->id)->get();
         $users = User::get();
         // $users = User::where('id','!=',Auth('api')->user()->id)->where('colloge_id',$request->colloge_id)->get();
-        $user=Auth('api')->user();
+        // $user=Auth('api')->user();
     
         
         // $this->sendNotificationsToOthers(  $post,$user);
@@ -157,6 +166,27 @@ class PostController extends Controller
             
         ]);
         
+    }
+    private function createPost(Request $request){
+        if(isset($request->section_id)){
+             return Post::create([
+           'content'=>$request->content,
+           'type'=>$request->type,
+           'user_id'=>  $request->user_id,
+           'section_id'=> $request->section_id,
+           'colloge_id'=>  $request->colloge_id,
+           
+       ]);
+       }
+       else{
+           return Post::create([
+               'content'=>$request->content,
+               'type'=>$request->type,
+               'user_id'=>  $request->user_id,
+               'colloge_id'=>  $request->colloge_id,
+               
+           ]); 
+       }
     }
     private function sendNotificationsToOthers(Post $post,$user){
         // broadcast(new RealtimePosts( $post, $user))->toOthers();

@@ -8,24 +8,63 @@ use Illuminate\Http\Request;
 
 class CollogeController extends Controller
 {
+    public function getCollogePosts(Request $request){
+        $data = post::where('colloge_id',$request->colloge_id)
+    //    join('colloges','colloges.id','=','posts.colloge_id')
+    //    ->
+       ->with(['colloge'=> function ($colloge){
+        $colloge->select('id','name');
+       }])
+       ->with(['section'=> function ($section){
+        $section->select('id','name');
+       }])
+       ->with(['user'=> function ($user){
+        $user->select('id','name','img');
+       }])
+       ->withCount('comment')
+       ->withCount('like')
+       ->latest()->take(50)
+    ->get();
+    // ->simplePaginate(20);
+    $posts=[];
+        foreach ($data as   $post) {
+           # code...
+          $amILike = Post::where('id',$post->id)
+          ->with(['like'=>function ($like){
+            $like->where('user_id', Auth('api')->user()->id);
+          }])
+          ->first();
+          if((int)$amILike[0]>0){
+            $post->amILike= 1;
+          }
+          else{
+             $post->amILike= 0;
+          }
+         array_push($posts,  $post );
+    //    if(isset($post->url)){
+    //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+        }
+    
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$data,]);
+    }
+ 
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function getCollogePosts(Request $request){
+    public function getCollogePosts2(Request $request){
         $data = Colloge::
         join('sections','sections.colloge_id','=','colloges.id')
        -> join('posts','posts.section_id','=','sections.id')
          ->join('users','users.id','=','posts.id')
          ->where('posts.colloge_id',$request->colloge_id)
-                    
                     ->select(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ])
-
-                        
-                                // ->latest()->take(10)
                                 ->get();
-                    //    ->get(['posts.*','colloges.name as colloge_name','sections.name as section_name', 'users.name','users.img' ]);
                        $posts=[];
      foreach ($data as   $post) {
         # code...
@@ -37,13 +76,12 @@ class CollogeController extends Controller
        $post->amILike=$amILike;
       array_push($posts,  $post );
      }
-       
- 
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
             'posts'=>$posts,]);
     }
+
     public function index(Request $request)
     {
        $sections = Colloge::find(2);

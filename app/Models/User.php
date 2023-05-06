@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,6 +60,15 @@ class User extends Authenticatable  implements JWTSubject
      *
      * @return mixed
      */
+
+     public function colloge(): BelongsTo
+     {
+         return $this->belongsTo(Colloge::class);
+     }
+     public function section(): BelongsTo
+     {
+         return $this->belongsTo(Section::class);
+     }
 
      public function post(): HasMany
      {

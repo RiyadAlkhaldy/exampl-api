@@ -9,12 +9,56 @@ use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
+    public function getSectionPosts(Request $request){
+        // $data = post::where('colloge_id',$request->colloge_id)
+        $data = post::where('section_id',1)
+       ->with(['colloge'=> function ($colloge){
+        $colloge->select('id','name');
+       }])
+       ->with(['section'=> function ($section){
+        $section->select('id','name');
+       }])
+       ->with(['user'=> function ($user){
+        $user->select('id','name','img');
+       }])
+       ->withCount('comment')
+       ->withCount('like')
+       ->latest()->take(50)
+    ->get();
+    // ->simplePaginate(20);
+    $posts=[];
+        foreach ($data as   $post) {
+           # code...
+          $amILike = Post::where('id',$post->id)
+          ->with(['like'=>function ($like){
+            $like->where('user_id', Auth('api')->user()->id);
+          }])
+          ->first();
+          if((int)$amILike[0]>0){
+            $post->amILike= 1;
+          }
+          else{
+             $post->amILike= 0;
+          }
+         array_push($posts,  $post );
+    //    if(isset($post->url)){
+    //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+        }
+    
+        return response()->json([
+            'status'=>'success',
+            'message' => 'The posts',
+            'posts'=>$data,]);
+    }
+ 
+
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function getSectionPosts(Request $request){
+    public function getSectionPosts2(Request $request){
         $data = Colloge::
         join('sections','sections.colloge_id','=','colloges.id')
        -> join('posts','posts.section_id','=','sections.id')

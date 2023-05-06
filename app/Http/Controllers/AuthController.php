@@ -35,11 +35,8 @@ use AuthVerify;
             ], 401);
         }
         //for me
-        $user = User::where(
-           
-            'email' , $request->email,
-            
-        )->first();
+        $user = User::where( 'email' , $request->email)->first();
+        $user = $this->getUser($user);
         $token = auth('api')->login($user);
 
         $user = Auth::user();
@@ -86,8 +83,8 @@ public function register(Request $request){
             'password' => Hash::make($verifiedUser->id_number),
             'type'=>$request->type,
         ]);
+        $user = $this->getUser($user);
         // $token = Auth::attempt($credentials);
-
         $token = auth('api')->login($user);
         return response()->json([
             'status' => 'success',
@@ -112,6 +109,16 @@ public function register(Request $request){
         ]);
        }
     }
+    private function getUser($user){
+         return User::where('id', $user->id)
+        ->with(['colloge'=> function ($colloge){
+            $colloge->select('id','name');
+        }])
+        ->with(['section'=> function ($section){
+            $section->select('id','name');
+        }])
+        ->first();
+    }
     
     public function registerTecherOrAdmin(Request $request){
         $checkRegister = $this->checkIfAdminOrTecherRegsterBefore ($request);
@@ -126,7 +133,8 @@ public function register(Request $request){
                    'password' => Hash::make($request->password),
                    'type'=>$request->type,
                ]);
-       
+               $user = $this->getUser($user);
+
                $token = auth('api')->login($user);
                return  response()->json([
                 'status' => 'success',
@@ -157,6 +165,7 @@ public function register(Request $request){
             'password' => Hash::make($request->password),
             'type'=>$request->type,
         ]);
+
         return response()->json(['techer'=> $teacher]);
 
     }
@@ -172,10 +181,18 @@ public function register(Request $request){
 
     public function me()
     {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-        ]);
+
+        $user = User::where('id', Auth::user()->id)
+        ->with(['colloge'=> function ($colloge){
+            $colloge->select('id','name');
+        }])
+        ->with(['section'=> function ($section){
+            $section->select('id','name');
+        }])
+        ->first();
+        return response()->json(
+           $user
+        );
     }
 
     public function refresh()

@@ -37,8 +37,8 @@ Route::post('create-teacher-temp' ,'createTeacherTemp' ) ;
 
     Route::post('login', 'login');
     Route::post('delete', 'delete');
-    Route::post('register', 'register');
-    Route::post('logout', 'logout');
+    Route::get('get-all-users-tmep', 'getAllTeacherTemp');
+    Route::post('agree-for-teacher', 'agreeToAddTeacherToUser');
     
     
 
@@ -86,7 +86,7 @@ Route::controller(SectionController::class)->prefix('section')->group(function (
 
 // });
 Route::controller(PostController::class)->prefix('posts') ->group(function (){
-    Route::post('store', 'store');
+    Route::post('create', 'create');
     Route::post('storefile', 'storeFile');
     Route::post('edit', 'edit');
     Route::post('delete', 'delete');
