@@ -33,25 +33,9 @@ class UserController extends Controller
     public function getAllUsers(){
         return User::all();
     }
-    // public function getUserPosts(){
-    //     $userPosts = User::where('id',Auth('api')->user()->id)
-    //     ->with(['post'=>function ($post){
-    //         $post->where('id','>',100)->where('id','<',200)->with('comment');
 
-    //     }])
-    //     ->first();
-    //     return $userPosts;
-    // }
-    // public function getUserPosts(){
-    //     // $userPosts = Colloge::where('id',Auth('api')->user()->colloge_id)
-    //     $userPosts = Colloge::with(['post'=> function ($post){
-    //         $post->latest()->with('comment');
-
-    //     }])
-    //     ->get();
-    //     return $userPosts;
-    // }
-    public function getUserPosts(){
+    // public function getUserPosts 
+     public function getUserPosts(){
         // $userPosts = Colloge::where('id',Auth('api')->user()->colloge_id)
        $userId= Auth('api')->user()->id;
         $userPosts = Post::where('user_id', $userId)
@@ -98,6 +82,24 @@ class UserController extends Controller
             ]);
         // return $userPosts;
     }
+
+    public function getUserById(Request $request){
+        $user = $this->getUser($request);
+
+        return response()->json([
+            'user' => $user ,
+        ]);
+    }
+    private function getUser($request){
+        return User::where('id', $request->user_id)
+       ->with(['colloge'=> function ($colloge){
+           $colloge->select('id','name');
+       }])
+       ->with(['section'=> function ($section){
+           $section->select('id','name');
+       }])
+       ->first();
+   }
     public function index(Request $request)
     {
         // return  response()->json(User::where('status',1)->count());

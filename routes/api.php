@@ -62,6 +62,8 @@ Route::controller(UserController::class)->prefix('user')->group(function (){
     Route::get('get-current-user','getCurrentUser');
     Route::post('upload-profile-image','profileImageEdit');
     Route::post('get-user-posts','getUserPosts');
+    Route::post('get-user-by-id','getUserById');
+    // getUserById
     //  getCurrentUser profileImage get-user-posts
 
 });
@@ -94,6 +96,7 @@ Route::controller(PostController::class)->prefix('posts') ->group(function (){
     Route::post('showNotifications', 'showNotifications');
     // Route::get('get-all-post', 'getAllPosts');
 
+    Route::get('get-all-posts-page', 'getAllPostsPage');
     Route::post('get-all-posts', 'getAllPosts');
     Route::post('get-all-posts2', 'getAllPosts2');
     Route::post('get-number-comments-likes', 'getNumberCommentsLikes');
@@ -101,12 +104,14 @@ Route::controller(PostController::class)->prefix('posts') ->group(function (){
 Route::controller(CommentController::class)->prefix('comment')->group(function () {
     Route::post('get-all-comments', 'getAllComments');
     Route::post('add-comment', 'addComment');
+    Route::post('delete-comment', 'deleteComment');
     Route::post('get-number-comments', 'getNumberComments');
     
 
 });
 Route::controller(LikeController::class)->prefix('like')->group(function () {
     Route::post('add-like', 'addLike');
+    Route::post('un-like', 'unLike');
 //
     Route::post('get-all-comments', 'getAllComments');
     Route::post('get-number-comments', 'getNumberComments');

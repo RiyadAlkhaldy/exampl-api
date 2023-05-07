@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Notification;
 class PostController extends Controller
 {
     use UploadFile;
-
     public function __construct(){
         // $this->middleware('auth:api');
     }
@@ -27,6 +26,49 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getAllPostsPage(Request $request){
+        $data = post::
+           with(['colloge'=> function ($colloge){
+            $colloge->select('id','name');
+           }])
+           ->with(['section'=> function ($section){
+            $section->select('id','name');
+           }])
+           ->with(['user'=> function ($user){
+            $user->select('id','name','img');
+           }])
+           ->withCount('comment')
+           ->withCount('like')
+           ->latest()
+        // ->get();
+        ->paginate(20);
+        // ->simplePaginate(20);
+        $posts=[];
+            foreach ($data as   $post) {
+               # code...
+              $amILike = Post::where('id',$post->id)
+              ->with(['like'=>function ($like){
+                $like->where('user_id', Auth('api')->user()->id);
+              }])
+              ->first();
+            //   $post->numberComments=$numberComments;
+            //   $post->numberLikes=$amILike;
+              if((int)$amILike[0]>0){
+                $post->amILike= 1;
+              }
+              else{
+                 $post->amILike= 0;
+              }
+             array_push($posts,  $post );
+        //    if(isset($post->url)){
+        //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+            }
+        
+            return response()->json([
+                'status'=>'success',
+                'message' => 'The posts',
+                'posts'=>$data,]);
+    }
     public function getAllPosts(){
         $data = Colloge::
         join('sections','sections.colloge_id','=','colloges.id')
@@ -106,14 +148,21 @@ class PostController extends Controller
              $post->amILike= 0;
           }
          array_push($posts,  $post );
-    //    if(isset($post->url)){
-    //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+         if(isset($post->user->img)){
+            str_replace("http://10.0.2.2:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->user->img);
+            str_replace("http://127.0.0.1:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->user->img);
+            }
+       if(isset($post->url)){
+        str_replace("http://127.0.0.1:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->url);
+
+        str_replace("http://10.0.2.2:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->url);
         }
-    
+    }
+        // https://ccd4-176-123-18-166.ngrok-free.app
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
-            'posts'=>$data,]);
+            'posts'=>$posts,]);
     }
 
     public function getNumberCommentsLikes(Request $request){

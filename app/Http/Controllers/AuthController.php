@@ -80,7 +80,7 @@ public function register(Request $request){
             'university_id' => $verifiedUser->university_id,
 
             'id_number' => $verifiedUser->id_number ,
-            'password' => Hash::make($verifiedUser->id_number),
+            'password' => $verifiedUser->id_number,
             'type'=>$request->type,
         ]);
         $user = $this->getUser($user);
@@ -89,7 +89,7 @@ public function register(Request $request){
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
-            'user' => $user->find($user->id),
+            'user' => $user ,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -139,7 +139,7 @@ public function register(Request $request){
                return  response()->json([
                 'status' => 'success',
                 'message' => 'User created successfully',
-                'user' => $user->find($user->id),
+                'user' => $user ,
                 'authorisation' => [
                     'token' => $token,
                     'type' => 'bearer',

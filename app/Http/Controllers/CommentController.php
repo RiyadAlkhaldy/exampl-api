@@ -55,7 +55,10 @@ class CommentController extends Controller
             'comment'=>  $data,
             ]);
         }
-
+public function deleteComment(Request $request){
+    $commentDelete = Comment::destroy($request->id);
+return $commentDelete;
+}
         /*
         create Comment 
         */

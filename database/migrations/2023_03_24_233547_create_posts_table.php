@@ -20,7 +20,7 @@ class CreatePostsTable extends Migration
             $table->smallInteger('type');
             $table->string('url')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->unsignedBigInteger('section_id')->nullable();
             $table->foreign('section_id')->references('id')->on('sections');
             $table->unsignedBigInteger('colloge_id')->nullable();

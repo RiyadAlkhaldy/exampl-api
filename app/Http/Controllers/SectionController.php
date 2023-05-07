@@ -41,14 +41,16 @@ class SectionController extends Controller
              $post->amILike= 0;
           }
          array_push($posts,  $post );
-    //    if(isset($post->url)){
-    //     str_replace("http://10.0.2.2","https://07f4-188-209-253-128.ngrok-free.app",$post->url);
+         if(isset($post->url)){
+            str_replace("http://10.0.2.2:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->url);
+            str_replace("http://127.0.0.1:8000","https://ccd4-176-123-18-166.ngrok-free.app",$post->url);
+            }
         }
     
         return response()->json([
             'status'=>'success',
             'message' => 'The posts',
-            'posts'=>$data,]);
+            'posts'=>$posts,]);
     }
  
 
